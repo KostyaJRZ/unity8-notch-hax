@@ -50,11 +50,11 @@ fi
 echo ">> Copying system files to patch & checking compatability..."
 cd $WORK
 for file in $(grep '^diff' $DIFF | grep -Eo '\ b/.*' | cut -c 4-); do
-	mkdir -p $(dirname $WORK/root/$file)
-	cp /$file $WORK/root/$file
+	mkdir -p $(dirname $WORK/$file)
+	cp /$file $WORK/$file
 done
 
-cd root/
+cd $WORK
 if ! patch -p1 < $DIFF; then
 	echo ">> ERROR: Some system files are incompatible with the patches;
           Please adjust '$DEVICE.diff' and try again!"
@@ -64,7 +64,7 @@ cd ../
 
 echo ">> Patches applied successfully! Proceeding to replacing system files..."
 mount | grep -q ' / .*ro' && sudo mount -o remount,rw /
-sudo cp -r root/* /
+sudo cp -r $WORK/* /
 sudo mount -o remount,ro /
 
 read -p ">> All done, would you like to restart unity8 right now (Y/n)? " ans
